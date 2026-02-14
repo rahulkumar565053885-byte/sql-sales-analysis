@@ -1,120 +1,207 @@
-# sql-sales-analysis
 --create table 
-drop table if exists Books;
-create table Books(
-Book_ID serial primary key ,
-Title varchar(111),
-Author varchar(111),
-Genre varchar(111),
-Published_year int ,
-Price numeric(10,2),
-Stok int 
+DROP TABLE IF EXISTS BOOKS;
 
+CREATE TABLE BOOKS (
+	BOOK_ID SERIAL PRIMARY KEY,
+	TITLE VARCHAR(111),
+	AUTHOR VARCHAR(111),
+	GENRE VARCHAR(111),
+	PUBLISHED_YEAR INT,
+	PRICE NUMERIC(10, 2),
+	STOK INT
 );
-select* from Books; 
+
+SELECT
+	*
+FROM
+	BOOKS;
+
 -- create table customers 
-drop table if exists customers;
-create table Customers(
-Customer_ID  serial primary key ,	
-Name	varchar(111),
-Email	varchar(111),
-Phone	varchar(111),
-City	varchar(111),
-Country varchar(111)
+DROP TABLE IF EXISTS CUSTOMERS;
 
-
+CREATE TABLE CUSTOMERS (
+	CUSTOMER_ID SERIAL PRIMARY KEY,
+	NAME VARCHAR(111),
+	EMAIL VARCHAR(111),
+	PHONE VARCHAR(111),
+	CITY VARCHAR(111),
+	COUNTRY VARCHAR(111)
 );
-select*from Customers;
+
+SELECT
+	*
+FROM
+	CUSTOMERS;
+
 -- create table order
-
-create table Orders(
-
-
-Order_ID serial primary key,
-Customer_ID int references Customers(Customer_id),
-Book_ID	int references Books(Book_id),
-Order_Date date,
-Quantity	int,
-Total_Amount numeric(11,2)
-
+CREATE TABLE ORDERS (
+	ORDER_ID SERIAL PRIMARY KEY,
+	CUSTOMER_ID INT REFERENCES CUSTOMERS (CUSTOMER_ID),
+	BOOK_ID INT REFERENCES BOOKS (BOOK_ID),
+	ORDER_DATE DATE,
+	QUANTITY INT,
+	TOTAL_AMOUNT NUMERIC(11, 2)
 );
-select* from Books; 
-select*from Customers;
-select*from Orders;
+
+SELECT
+	*
+FROM
+	BOOKS;
+
+SELECT
+	*
+FROM
+	CUSTOMERS;
+
+SELECT
+	*
+FROM
+	ORDERS;
 
 --1. retrieve all books in the " fiction" genre:
-
-select *from books
-where genre='Fiction';
+SELECT
+	*
+FROM
+	BOOKS
+WHERE
+	GENRE = 'Fiction';
 
 --2. find books published after the year 1950
-select* from books 
-where published_year>1950;
+SELECT
+	*
+FROM
+	BOOKS
+WHERE
+	PUBLISHED_YEAR > 1950;
 
 --3. list all customer from cannada
-
-select*from customers
-where country='Canada';
+SELECT
+	*
+FROM
+	CUSTOMERS
+WHERE
+	COUNTRY = 'Canada';
 
 --4. show orders placed in november 2023
+SELECT
+	*
+FROM
+	ORDERS
+WHERE
+	ORDER_DATE BETWEEN '2023-11-01' AND '2023-11-30';
 
-select*from Orders
-where Order_date between '2023-11-01' and '2023-11-30';
-select*from books;
+SELECT
+	*
+FROM
+	BOOKS;
 
 --5. retrive the total stock of books avaiable :
-
-select sum(stok) as stock_boooks from Books;
+SELECT
+	SUM(STOK) AS STOCK_BOOOKS
+FROM
+	BOOKS;
 
 --6. find the details of the most expensive book
+SELECT
+	*
+FROM
+	BOOKS
+ORDER BY
+	PRICE DESC
+LIMIT
+	2;
 
-select*from books order by price desc limit 2;
-
-select *from Books;
+SELECT
+	*
+FROM
+	BOOKS;
 
 --7. show all customer who ordered more than 1 quantity of a books 
-
-select*from orders
-where quantity>1;
+SELECT
+	*
+FROM
+	ORDERS
+WHERE
+	QUANTITY > 1;
 
 --8. retrieve all orders where the total amount exceed $20
-
-select*from orders
-where total_amount>20;
+SELECT
+	*
+FROM
+	ORDERS
+WHERE
+	TOTAL_AMOUNT > 20;
 
 --9. list all genre available in the books table 
-
-select distinct(genre) from books;
+SELECT DISTINCT
+	(GENRE)
+FROM
+	BOOKS;
 
 --10. find the book with the lowest stock 
-
-select*from books order by stok asc limit 11;
+SELECT
+	*
+FROM
+	BOOKS
+ORDER BY
+	STOK ASC
+LIMIT
+	11;
 
 --11. calculate the total revanue generated from all orders 
+SELECT
+	*
+FROM
+	ORDERS;
 
-select*from orders;
-select sum(total_amount) as total_revanue from orders;
+SELECT
+	SUM(TOTAL_AMOUNT) AS TOTAL_REVANUE
+FROM
+	ORDERS;
 
 -- advance qsns
-
 --1. retrieve the total number of books sold for each genre
+SELECT
+	*
+FROM
+	BOOKS
+SELECT
+	GENRE,
+	COUNT(GENRE)
+FROM
+	BOOKS
+GROUP BY
+	GENRE;
 
-select * from books
+SELECT
+	*
+FROM
+	BOOKS;
 
-select genre,count(genre) from books
- group by genre;
-select* from Books; 
-select*from Customers;
-select*from Orders;
+SELECT
+	*
+FROM
+	CUSTOMERS;
 
-select b.genre, sum(o.quantity) as total_books_sold
-from orders o
-join books b on o.book_id=b.book_id
-group by b.genre;
+SELECT
+	*
+FROM
+	ORDERS;
+
+SELECT
+	B.GENRE,
+	SUM(O.QUANTITY) AS TOTAL_BOOKS_SOLD
+FROM
+	ORDERS O
+	JOIN BOOKS B ON O.BOOK_ID = B.BOOK_ID
+GROUP BY
+	B.GENRE;
 
 --2. find the avrg price of books in the 'Fantasy' genre
-
-select*from books
+SELECT
+	*
+FROM
+	BOOKS
 SELECT
 	ROUND(AVG(PRICE), 2) AS AVG_PRICE
 FROM
@@ -123,30 +210,41 @@ WHERE
 	GENRE = 'Fantasy';
 
 --3. list customers who have placed atleast 2 orders 
+SELECT
+	*
+FROM
+	CUSTOMERS
+WHERE
+	QUANTITY >= 2;
 
-select* from customers
-where quantity>=2;
-
-select c.name,o.customer_id ,count(o.order_id) as order_count from orders o
-join customers c on o.customer_id=c.customer_id
-group by o.customer_id, c.name
-having count(o.order_id)>=2;
-
+SELECT
+	C.NAME,
+	O.CUSTOMER_ID,
+	COUNT(O.ORDER_ID) AS ORDER_COUNT
+FROM
+	ORDERS O
+	JOIN CUSTOMERS C ON O.CUSTOMER_ID = C.CUSTOMER_ID
+GROUP BY
+	O.CUSTOMER_ID,
+	C.NAME
+HAVING
+	COUNT(O.ORDER_ID) >= 2;
 
 --4. find the most frequently orders book
 SELECT
-	b.title ,o.BOOK_ID,
-	COUNT(o.ORDER_ID) AS ORDER_COUNT
+	B.TITLE,
+	O.BOOK_ID,
+	COUNT(O.ORDER_ID) AS ORDER_COUNT
 FROM
-	ORDERS o 
-	join books b on o.book_id=b.book_id
+	ORDERS O
+	JOIN BOOKS B ON O.BOOK_ID = B.BOOK_ID
 GROUP BY
-	o.BOOK_ID,b.title
+	O.BOOK_ID,
+	B.TITLE
 ORDER BY
-ORDER_COUNT DESC;
+	ORDER_COUNT DESC;
 
 --5. show the top 3 most expensive books of 'fantasy' genre
-
 SELECT
 	*
 FROM
@@ -158,35 +256,61 @@ ORDER BY
 LIMIT
 	3;
 
-	--6. retrieve the total quantity of books sold by each author
+--6. retrieve the total quantity of books sold by each author
+SELECT
+	*
+FROM
+	BOOKS;
 
-	select*from books;
-	select* from orders
-	select b.author,sum(o.quantity) as total_sum 
-	from orders o
-	join books b on b.book_id=o.book_id
-	group by b.author; 
+SELECT
+	*
+FROM
+	ORDERS
+SELECT
+	B.AUTHOR,
+	SUM(O.QUANTITY) AS TOTAL_SUM
+FROM
+	ORDERS O
+	JOIN BOOKS B ON B.BOOK_ID = O.BOOK_ID
+GROUP BY
+	B.AUTHOR;
 
-
-	--7. list the cities where customers who spent over $30 are located;
-
-	select distinct c.city,total_amount
-	from orders o
-	join customers c on o.customer_id=c.customer_id
-	where o.total_amount>30
-
+--7. list the cities where customers who spent over $30 are located;
+SELECT DISTINCT
+	C.CITY,
+	TOTAL_AMOUNT
+FROM
+	ORDERS O
+	JOIN CUSTOMERS C ON O.CUSTOMER_ID = C.CUSTOMER_ID
+WHERE
+	O.TOTAL_AMOUNT > 30
 	--8. find the customers who spent the most on orders
+SELECT
+	C.CUSTOMER_ID,
+	C.NAME,
+	SUM(O.TOTAL_AMOUNT) AS TOTAL_SPENT
+FROM
+	ORDERS O
+	JOIN CUSTOMERS C ON O.CUSTOMER_ID = C.CUSTOMER_ID
+GROUP BY
+	C.CUSTOMER_ID,
+	C.NAME
+ORDER BY
+	TOTAL_SPENT DESC
+LIMIT
+	1;
 
-	select c.customer_id,c.name ,sum(o.total_amount) as total_spent
-	from orders o
-	join customers c on o.customer_id=c.customer_id
-	group by c.customer_id,c.name
-	order by total_spent desc limit 1;
-
-	--9. calculate the stock remaining after fullfilling all orders
-
-select 
-distinct(b.book_id) ,b.title,b.stok,coalesce (sum(o.quantity),0) as total_q ,b.stok-coalesce (sum(o.quantity),0) as remaing_stock	from books b
-	left join orders o on b.book_id=o.book_id
-	group by b.book_id order by book_id asc;
-
+--9. calculate the stock remaining after fullfilling all orders
+SELECT DISTINCT
+	(B.BOOK_ID),
+	B.TITLE,
+	B.STOK,
+	COALESCE(SUM(O.QUANTITY), 0) AS TOTAL_Q,
+	B.STOK - COALESCE(SUM(O.QUANTITY), 0) AS REMAING_STOCK
+FROM
+	BOOKS B
+	LEFT JOIN ORDERS O ON B.BOOK_ID = O.BOOK_ID
+GROUP BY
+	B.BOOK_ID
+ORDER BY
+	BOOK_ID ASC;
