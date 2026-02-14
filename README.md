@@ -185,7 +185,8 @@ LIMIT
 
 	--9. calculate the stock remaining after fullfilling all orders
 
-select distinct(b.book_id) ,b.title,b.stok,coalesce (sum(o.quantity),0) as total_q ,b.stok-coalesce (sum(o.quantity),0) as remaing_stock	from books b
+select 
+distinct(b.book_id) ,b.title,b.stok,coalesce (sum(o.quantity),0) as total_q ,b.stok-coalesce (sum(o.quantity),0) as remaing_stock	from books b
 	left join orders o on b.book_id=o.book_id
 	group by b.book_id order by book_id asc;
 
